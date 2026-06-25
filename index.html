@@ -97,18 +97,15 @@
         let gameState = ["", "", "", "", "", "", "", "", ""];
         let gameActive = true;
 
-        // Combinações de vitória corrigidas
-        const winningConditions = [, // Linhas,
- ,
- , // Colunas,
- ,
- , // Diagonais
-            [2, 4, 6]
+        // Lista de condições de vitória totalmente preenchida
+        const winningConditions = [, // Linha superior, // Linha do meio, // Linha inferior, // Coluna esquerda, // Coluna do meio, // Coluna direita, // Diagonal principal
+            [2, 4, 6]  // Diagonal secundária
         ];
 
         const statusMessage = document.getElementById('statusMessage');
 
         function handleClick(clickedCellIndex) {
+            // Impede o clique se a célula já estiver ocupada ou o jogo acabou
             if (gameState[clickedCellIndex] !== "" || !gameActive) {
                 return;
             }
