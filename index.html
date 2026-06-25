@@ -3,172 +3,105 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jogo da Velha</title>
+    <title>Jogo do Clique Rápido</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
-        }
-        h1 {
-            color: #333;
-            margin-bottom: 20px;
-        }
-        .board {
-            display: grid;
-            grid-template-columns: repeat(3, 100px);
-            grid-template-rows: repeat(3, 100px);
-            gap: 10px;
-            background-color: #333;
-            padding: 10px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-        }
-        .cell {
-            background-color: #fff;
-            border-radius: 5px;
-            font-size: 3rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .cell:hover {
-            background-color: #e0e0e0;
-        }
-        .cell.taken {
-            cursor: not-allowed;
-        }
-        .message-container {
-            margin-top: 20px;
+            font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #f4f4f9;
+            margin-top: 50px;
         }
-        .message {
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        #clickBtn {
+            padding: 20px 40px;
             font-size: 1.5rem;
-            font-weight: bold;
-            color: #333;
-            margin-bottom: 15px;
-        }
-        button {
-            padding: 10px 20px;
-            font-size: 1rem;
             background-color: #007bff;
             color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
-        button:hover {
-            background-color: #0056b3;
+        #clickBtn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .info {
+            font-size: 1.2rem;
+            margin: 15px 0;
+        }
+        #resetBtn {
+            padding: 8px 15px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 
-    <h1>Jogo da Velha</h1>
+<div class="container">
+    <h1>Clique Rápido!</h1>
+    <p class="info">Tempo restante: <span id="timer">10</span>s</p>
+    <p class="info">Cliques: <span id="score">0</span></p>
+    
+    <button id="clickBtn" onclick="registerClick()">CLIQUE AQUI!</button>
+    <br><br>
+    <button id="resetBtn" onclick="resetGame()">Jogar Novamente</button>
+</div>
 
-    <div class="board" id="board">
-        <div class="cell" onclick="handleClick(0)"></div>
-        <div class="cell" onclick="handleClick(1)"></div>
-        <div class="cell" onclick="handleClick(2)"></div>
-        <div class="cell" onclick="handleClick(3)"></div>
-        <div class="cell" onclick="handleClick(4)"></div>
-        <div class="cell" onclick="handleClick(5)"></div>
-        <div class="cell" onclick="handleClick(6)"></div>
-        <div class="cell" onclick="handleClick(7)"></div>
-        <div class="cell" onclick="handleClick(8)"></div>
-    </div>
+<script>
+    let clicks = 0;
+    let timeLeft = 10;
+    let timerId = null;
+    let gameStarted = false;
 
-    <div class="message-container">
-        <div class="message" id="statusMessage">Vez do Jogador X</div>
-        <button onclick="restartGame()">Reiniciar Jogo</button>
-    </div>
+    const clickBtn = document.getElementById('clickBtn');
+    const scoreDisplay = document.getElementById('score');
+    const timerDisplay = document.getElementById('timer');
 
-    <script>
-        let currentPlayer = 'X';
-        let gameState = ["", "", "", "", "", "", "", "", ""];
-        let gameActive = true;
-
-        // Lista de condições de vitória totalmente preenchida
-        const winningConditions = [, // Linha superior, // Linha do meio, // Linha inferior, // Coluna esquerda, // Coluna do meio, // Coluna direita, // Diagonal principal
-            [2, 4, 6]  // Diagonal secundária
-        ];
-
-        const statusMessage = document.getElementById('statusMessage');
-
-        function handleClick(clickedCellIndex) {
-            // Impede o clique se a célula já estiver ocupada ou o jogo acabou
-            if (gameState[clickedCellIndex] !== "" || !gameActive) {
-                return;
-            }
-
-            gameState[clickedCellIndex] = currentPlayer;
-            document.getElementsByClassName('cell')[clickedCellIndex].innerText = currentPlayer;
-            document.getElementsByClassName('cell')[clickedCellIndex].classList.add('taken');
-            
-            checkResult();
+    function registerClick() {
+        if (!gameStarted) {
+            startTimer();
+            gameStarted = true;
         }
-
-        function checkResult() {
-            let roundWon = false;
-
-            for (let i = 0; i < winningConditions.length; i++) {
-                const winCondition = winningConditions[i];
-                let a = gameState[winCondition[0]];
-                let b = gameState[winCondition[1]];
-                let c = gameState[winCondition[2]];
-
-                if (a === '' || b === '' || c === '') {
-                    continue;
-                }
-
-                if (a === b && b === c) {
-                    roundWon = true;
-                    break;
-                }
-            }
-
-            if (roundWon) {
-                statusMessage.innerText = `Jogador ${currentPlayer} Venceu!`;
-                gameActive = false;
-                return;
-            }
-
-            let roundDraw = !gameState.includes("");
-            if (roundDraw) {
-                statusMessage.innerText = "Empate!";
-                gameActive = false;
-                return;
-            }
-
-            changePlayer();
+        
+        if (timeLeft > 0) {
+            clicks++;
+            scoreDisplay.innerText = clicks;
         }
+    }
 
-        function changePlayer() {
-            currentPlayer = currentPlayer === "X" ? "O" : "X";
-            statusMessage.innerText = `Vez do Jogador ${currentPlayer}`;
-        }
+    function startTimer() {
+        timerId = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
 
-        function restartGame() {
-            currentPlayer = 'X';
-            gameState = ["", "", "", "", "", "", "", "", ""];
-            gameActive = true;
-            statusMessage.innerText = `Vez do Jogador X`;
-
-            let cells = document.getElementsByClassName('cell');
-            for (let i = 0; i < cells.length; i++) {
-                cells[i].innerText = "";
-                cells[i].classList.remove('taken');
+            if (timeLeft <= 0) {
+                clearInterval(timerId);
+                clickBtn.disabled = true;
+                alert(`Fim de jogo! Você conseguiu ${clicks} cliques.`);
             }
-        }
-    </script>
+        }, 1000);
+    }
+
+    function resetGame() {
+        clearInterval(timerId);
+        clicks = 0;
+        timeLeft = 10;
+        gameStarted = false;
+        clickBtn.disabled = false;
+        scoreDisplay.innerText = clicks;
+        timerDisplay.innerText = timeLeft;
+    }
+</script>
+
 </body>
 </html>
