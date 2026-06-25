@@ -76,15 +76,15 @@
     <h1>Jogo da Velha</h1>
 
     <div class="board" id="board">
-        <div class="cell" data-index="0" onclick="handleClick(0)"></div>
-        <div class="cell" data-index="1" onclick="handleClick(1)"></div>
-        <div class="cell" data-index="2" onclick="handleClick(2)"></div>
-        <div class="cell" data-index="3" onclick="handleClick(3)"></div>
-        <div class="cell" data-index="4" onclick="handleClick(4)"></div>
-        <div class="cell" data-index="5" onclick="handleClick(5)"></div>
-        <div class="cell" data-index="6" onclick="handleClick(6)"></div>
-        <div class="cell" data-index="7" onclick="handleClick(7)"></div>
-        <div class="cell" data-index="8" onclick="handleClick(8)"></div>
+        <div class="cell" onclick="handleClick(0)"></div>
+        <div class="cell" onclick="handleClick(1)"></div>
+        <div class="cell" onclick="handleClick(2)"></div>
+        <div class="cell" onclick="handleClick(3)"></div>
+        <div class="cell" onclick="handleClick(4)"></div>
+        <div class="cell" onclick="handleClick(5)"></div>
+        <div class="cell" onclick="handleClick(6)"></div>
+        <div class="cell" onclick="handleClick(7)"></div>
+        <div class="cell" onclick="handleClick(8)"></div>
     </div>
 
     <div class="message-container">
@@ -97,13 +97,12 @@
         let gameState = ["", "", "", "", "", "", "", "", ""];
         let gameActive = true;
 
-        const winningConditions = [,
+        // Combinações de vitória corrigidas
+        const winningConditions = [, // Linhas,
  ,
+ , // Colunas,
  ,
- ,
- ,
- ,
- ,
+ , // Diagonais
             [2, 4, 6]
         ];
 
@@ -124,7 +123,7 @@
         function checkResult() {
             let roundWon = false;
 
-            for (let i = 0; i <= 7; i++) {
+            for (let i = 0; i < winningConditions.length; i++) {
                 const winCondition = winningConditions[i];
                 let a = gameState[winCondition[0]];
                 let b = gameState[winCondition[1]];
