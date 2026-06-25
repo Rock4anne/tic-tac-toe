@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jogo da Velha</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-template-rows: repeat(3, 100px);
+            gap: 10px;
+            background-color: #333;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .cell {
+            background-color: #fff;
+            border-radius: 5px;
+            font-size: 3rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .cell:hover {
+            background-color: #e0e0e0;
+        }
+        .cell.taken {
+            cursor: not-allowed;
+        }
+        .message-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        .message {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Jogo da Velha</h1>
+
+    <div class="board" id="board">
+        <div class="cell" data-index="0" onclick="handleClick(0)"></div>
+        <div class="cell" data-index="1" onclick="handleClick(1)"></div>
+        <div class="cell" data-index="2" onclick="handleClick(2)"></div>
+        <div class="cell" data-index="3" onclick="handleClick(3)"></div>
+        <div class="cell" data-index="4" onclick="handleClick(4)"></div>
+        <div class="cell" data-index="5" onclick="handleClick(5)"></div>
+        <div class="cell" data-index="6" onclick="handleClick(6)"></div>
+        <div class="cell" data-index="7" onclick="handleClick(7)"></div>
+        <div class="cell" data-index="8" onclick="handleClick(8)"></div>
+    </div>
+
+    <div class="message-container">
+        <div class="message" id="statusMessage">Vez do Jogador X</div>
+        <button onclick="restartGame()">Reiniciar Jogo</button>
+    </div>
+
+    <script>
+        let currentPlayer = 'X';
+        let gameState = ["", "", "", "", "", "", "", "", ""];
+        let gameActive = true;
+
+        const winningConditions = [,
+ ,
+ ,
+ ,
+ ,
+ ,
+ ,
+            [2, 4, 6]
+        ];
+
+        const statusMessage = document.getElementById('statusMessage');
+
+        function handleClick(clickedCellIndex) {
+            if (gameState[clickedCellIndex] !== "" || !gameActive) {
+                return;
+            }
+
+            gameState[clickedCellIndex] = currentPlayer;
+            document.getElementsByClassName('cell')[clickedCellIndex].innerText = currentPlayer;
+            document.getElementsByClassName('cell')[clickedCellIndex].classList.add('taken');
+            
+            checkResult();
+        }
+
+        function checkResult() {
+            let roundWon = false;
+
+            for (let i = 0; i <= 7; i++) {
+                const winCondition = winningConditions[i];
+                let a = gameState[winCondition[0]];
+                let b = gameState[winCondition[1]];
+                let c = gameState[winCondition[2]];
+
+                if (a === '' || b === '' || c === '') {
+                    continue;
+                }
+
+                if (a === b && b === c) {
+                    roundWon = true;
+                    break;
+                }
+            }
+
+            if (roundWon) {
+                statusMessage.innerText = `Jogador ${currentPlayer} Venceu!`;
+                gameActive = false;
+                return;
+            }
+
+            let roundDraw = !gameState.includes("");
+            if (roundDraw) {
+                statusMessage.innerText = "Empate!";
+                gameActive = false;
+                return;
+            }
+
+            changePlayer();
+        }
+
+        function changePlayer() {
+            currentPlayer = currentPlayer === "X" ? "O" : "X";
+            statusMessage.innerText = `Vez do Jogador ${currentPlayer}`;
+        }
+
+        function restartGame() {
+            currentPlayer = 'X';
+            gameState = ["", "", "", "", "", "", "", "", ""];
+            gameActive = true;
+            statusMessage.innerText = `Vez do Jogador X`;
+
+            let cells = document.getElementsByClassName('cell');
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].innerText = "";
+                cells[i].classList.remove('taken');
+            }
+        }
+    </script>
+</body>
+</html>
